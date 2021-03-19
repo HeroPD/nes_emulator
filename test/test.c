@@ -263,6 +263,92 @@ int ldx_aby() {
 
 // LDY TESTS
 
+int ldy_imm() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    /*source
+        LDY #$f2
+    */
+    uint8_t code [] = "a0 f2";
+    load_code(ram, cpustate, code, sizeof code);
+    clock(&cpustate, ram);
+    if (cpustate.y == 0xf2) {
+        return 0;
+    }
+    return 1;
+}
+
+int ldy_zp0() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    /*source
+        LDY $20
+    */
+    uint8_t code [] = "a4 20";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0020, 0xcb);
+    clock(&cpustate, ram);
+    if (cpustate.y == 0xcb) {
+        return 0;
+    }
+    return 1;
+}
+
+int ldy_zpx() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    /*source
+        LDY $20, X
+    */
+    uint8_t code [] = "b4 20";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0025, 0xcf);
+    cpustate.x = 0x05;
+    clock(&cpustate, ram);
+    if (cpustate.y == 0xcf) {
+        return 0;
+    }
+    return 1;
+}
+
+int ldy_abs() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    /*source
+        LDY $2001
+    */
+    uint8_t code [] = "ac 01 20";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x2001, 0xde);
+    clock(&cpustate, ram);
+    if (cpustate.y == 0xde) {
+        return 0;
+    }
+    return 1;
+}
+
+int ldy_abx() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    /*source
+        LDY $2015, X
+    */
+    uint8_t code [] = "bc 15 20";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x203a, 0xcf);
+    cpustate.x = 0x25;
+    clock(&cpustate, ram);
+    if (cpustate.y == 0xcf) {
+        return 0;
+    }
+    return 1;
+}
+
 int main(int argc, char **argv) {
     init_logfile();
     printf("hello world %d %s\n", argc, argv[1]);
@@ -293,6 +379,16 @@ int main(int argc, char **argv) {
         return ldx_abs();
     } else if (strcmp(test_name, "LDX ABY") == 0) {
         return ldx_aby();
+    } else if (strcmp(test_name, "LDY IMM") == 0) {
+        return ldy_imm();
+    } else if (strcmp(test_name, "LDY ZP0") == 0) {
+        return ldy_zp0();
+    } else if (strcmp(test_name, "LDY ZPX") == 0) {
+        return ldy_zpx();
+    } else if (strcmp(test_name, "LDY ABS") == 0) {
+        return ldy_abs();
+    } else if (strcmp(test_name, "LDY ABX") == 0) {
+        return ldy_abx();
     }
     return 1;
 }
