@@ -429,15 +429,15 @@ uint8_t PHP(cpu6502 * state, uint8_t * ram) {
 }
 
 uint8_t PLA(cpu6502 * state, uint8_t * ram) {
-    state->a = nesbus_read(ram, 0x0100 + state->sp);
     state->sp++;
+    state->a = nesbus_read(ram, 0x0100 + state->sp);
     log_debug("PLA %x", state->a);
     return 0;
 }
 
 uint8_t PLP(cpu6502 * state, uint8_t * ram) {
-    state->status = nesbus_read(ram, 0x0100 + state->sp);
     state->sp++;
+    state->status = nesbus_read(ram, 0x0100 + state->sp);
     log_debug("PLP %x", state->status);
     return 0;
 }
