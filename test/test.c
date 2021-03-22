@@ -663,7 +663,7 @@ int plp() {
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
     /*source
-        PLA
+        PLP
     */
     uint8_t code [] = "28";
     load_code(ram, cpustate, code, sizeof code);
@@ -671,6 +671,636 @@ int plp() {
     cpustate.sp = 0xfe;
     clock(&cpustate, ram);
     if (cpustate.sp == 0xff && cpustate.status == 0xf2) {
+        return 0;
+    }
+    return 1;
+}
+
+// ROL TESTS 40
+
+int rol_a() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        ROL A
+    */
+    uint8_t code [] = "2a";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.a = 0x21;
+    clock(&cpustate, ram);
+    if (cpustate.a == 0x42) {
+        return 0;
+    }
+    return 1;
+}
+
+int rol_zp0() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        ROL $20
+    */
+    uint8_t code [] = "26 20";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0020, 0x21);
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x42) {
+        return 0;
+    }
+    return 1;
+}
+
+int rol_zpx() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        ROL $20, X
+    */
+    uint8_t code [] = "36 1b";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0020, 0x21);
+    cpustate.x = 0x5;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x42) {
+        return 0;
+    }
+    return 1;
+}
+
+int rol_abs() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        ROL $0020
+    */
+    uint8_t code [] = "2e 20 00";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0020, 0x21);
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x42) {
+        return 0;
+    }
+    return 1;
+}
+
+int rol_abx() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        ROL $0020, X
+    */
+    uint8_t code [] = "3e 1b 00";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0020, 0x21);
+    cpustate.x = 0x5;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x42) {
+        return 0;
+    }
+    return 1;
+}
+
+// ROR TESTS 41
+
+int ror_a() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        ROR A
+    */
+    uint8_t code [] = "6a";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.a = 0x21;
+    clock(&cpustate, ram);
+    if (cpustate.a == 0x10) {
+        return 0;
+    }
+    return 1;
+}
+
+int ror_zp0() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        ROR $20
+    */
+    uint8_t code [] = "66 20";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0020, 0x21);
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x10) {
+        return 0;
+    }
+    return 1;
+}
+
+int ror_zpx() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        ROR $1b, X
+    */
+    uint8_t code [] = "76 1b";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0020, 0x21);
+    cpustate.x = 0x5;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x10) {
+        return 0;
+    }
+    return 1;
+}
+
+int ror_abs() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        ROR $0020
+    */
+    uint8_t code [] = "6e 20 00";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0020, 0x21);
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x10) {
+        return 0;
+    }
+    return 1;
+}
+
+int ror_abx() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        ROR $001b, X
+    */
+    uint8_t code [] = "7e 1b 00";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0020, 0x21);
+    cpustate.x = 0x5;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x10) {
+        return 0;
+    }
+    return 1;
+}
+
+// RTI TESTS 42
+
+int rti() {
+    return 1;
+}
+
+// RTS TESTS 43
+
+int rts() {
+    return 1;
+}
+
+// SBC TESTS 44
+
+// SEC TESTS 45
+
+int sec() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        SEC
+    */
+    uint8_t code [] = "38";
+    load_code(ram, cpustate, code, sizeof code);
+    clock(&cpustate, ram);
+    if (check_status(&cpustate, C)) {
+        return 0;
+    }
+    return 1;
+}
+
+// SED TESTS 46
+
+int sed() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        SEC
+    */
+    uint8_t code [] = "f8";
+    load_code(ram, cpustate, code, sizeof code);
+    clock(&cpustate, ram);
+    if (!check_status(&cpustate, C)) {
+        return 0;
+    }
+    return 1;
+}
+
+// SEI TESTS 47
+
+int sei() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        SEI
+    */
+    uint8_t code [] = "78";
+    load_code(ram, cpustate, code, sizeof code);
+    clock(&cpustate, ram);
+    if (check_status(&cpustate, I)) {
+        return 0;
+    }
+    return 1;
+}
+
+// STA TESTS 48
+
+int sta_zp0() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STA $20
+    */
+    uint8_t code [] = "85 20";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.a = 0x15;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x15) {
+        return 0;
+    }
+    return 1;
+}
+
+int sta_zpx() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STA $20
+    */
+    uint8_t code [] = "95 1b";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.x = 0x5;
+    cpustate.a = 0x15;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x15) {
+        return 0;
+    }
+    return 1;
+}
+
+int sta_abs() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STA $0020
+    */
+    uint8_t code [] = "8d 20 00";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.a = 0x15;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x15) {
+        return 0;
+    }
+    return 1;
+}
+
+int sta_abx() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STA $001b, X
+    */
+    uint8_t code [] = "9d 1b 00";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.x = 0x5;
+    cpustate.a = 0x15;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x15) {
+        return 0;
+    }
+    return 1;
+}
+
+int sta_aby() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STA $001b, Y
+    */
+    uint8_t code [] = "99 1b 00";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.y = 0x5;
+    cpustate.a = 0x15;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x15) {
+        return 0;
+    }
+    return 1;
+}
+
+int sta_indx() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STA ($20), X
+    */
+    uint8_t code [] = "81 20";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0025, 0x11);
+    nesbus_write(ram, 0x0026, 0x12);
+    cpustate.x = 0x5;
+    cpustate.a = 0x15;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x1211) == 0x15) {
+        return 0;
+    }
+    return 1;
+}
+
+int sta_indy() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STA ($0020), Y
+    */
+    uint8_t code [] = "91 20";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0020, 0x11);
+    nesbus_write(ram, 0x0021, 0x12);
+    cpustate.y = 0x5;
+    cpustate.a = 0x15;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x1216) == 0x15) {
+        return 0;
+    }
+    return 1;
+}
+
+// STX TESTS 49
+
+int stx_zp0() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STX $20
+    */
+    uint8_t code [] = "86 20";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.x = 0x3d;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x3d) {
+        return 0;
+    }
+    return 1;
+}
+
+int stx_zpy() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STX $20, Y
+    */
+    uint8_t code [] = "96 1b";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.x = 0x3d;
+    cpustate.y = 0x5;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x3d) {
+        return 0;
+    }
+    return 1;
+}
+
+int stx_abs() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STX $0020
+    */
+    uint8_t code [] = "8e 20 00";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.x = 0x3d;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x3d) {
+        return 0;
+    }
+    return 1;
+}
+
+// STY TESTS 50
+
+int sty_zp0() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STY $20
+    */
+    uint8_t code [] = "84 20";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.y = 0x3d;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x3d) {
+        return 0;
+    }
+    return 1;
+}
+
+int sty_zpx() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STY $20, X
+    */
+    uint8_t code [] = "94 20";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.y = 0x3d;
+    cpustate.x = 0x5;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0025) == 0x3d) {
+        return 0;
+    }
+    return 1;
+}
+
+int sty_abs() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        STY $0020
+    */
+    uint8_t code [] = "8c 20 00";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.y = 0x3d;
+    clock(&cpustate, ram);
+    if (nesbus_read(ram, 0x0020) == 0x3d) {
+        return 0;
+    }
+    return 1;
+}
+
+// TAX TESTS 51
+
+int tax() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        TAX
+    */
+    uint8_t code [] = "aa";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.a = 0x3d;
+    clock(&cpustate, ram);
+    if (cpustate.x == 0x3d) {
+        return 0;
+    }
+    return 1;
+}
+
+// TAY TESTS 52
+
+int tay() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        TAY
+    */
+    uint8_t code [] = "a8";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.a = 0x3d;
+    clock(&cpustate, ram);
+    if (cpustate.y == 0x3d) {
+        return 0;
+    }
+    return 1;
+}
+
+// TSX TESTS 53
+
+int tsx() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        TSX
+    */
+    uint8_t code [] = "ba";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.sp = 0x3d;
+    clock(&cpustate, ram);
+    if (cpustate.x == 0x3d) {
+        return 0;
+    }
+    return 1;
+}
+
+// TXA TESTS 54
+
+int txa() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        TXA
+    */
+    uint8_t code [] = "8a";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.x = 0x3d;
+    clock(&cpustate, ram);
+    if (cpustate.a == 0x3d) {
+        return 0;
+    }
+    return 1;
+}
+
+// TXS TESTS 55
+
+int txs() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        TXS
+    */
+    uint8_t code [] = "9a";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.x = 0x3d;
+    clock(&cpustate, ram);
+    if (cpustate.sp == 0x3d) {
+        return 0;
+    }
+    return 1;
+}
+
+// TYA TESTS 56
+
+int tya() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xff;
+    /*source
+        TYA
+    */
+    uint8_t code [] = "98";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.y = 0x3d;
+    clock(&cpustate, ram);
+    if (cpustate.a == 0x3d) {
         return 0;
     }
     return 1;
@@ -750,6 +1380,74 @@ int main(int argc, char **argv) {
         return pla();
     } else if (strcmp(test_name, "PLP") == 0) {
         return plp();
+    } else if (strcmp(test_name, "ROLA") == 0) {
+        return rol_a();
+    } else if (strcmp(test_name, "ROL_ZP0") == 0) {
+        return rol_zp0();
+    } else if (strcmp(test_name, "ROL_ZPX") == 0) {
+        return rol_zpx();
+    } else if (strcmp(test_name, "ROL_ABS") == 0) {
+        return rol_abs();
+    } else if (strcmp(test_name, "ROL_ABX") == 0) {
+        return rol_abx();
+    } else if (strcmp(test_name, "RORA") == 0) {
+        return ror_a();
+    } else if (strcmp(test_name, "ROR_ZP0") == 0) {
+        return ror_zp0();
+    } else if (strcmp(test_name, "ROR_ZPX") == 0) {
+        return ror_zpx();
+    } else if (strcmp(test_name, "ROR_ABS") == 0) {
+        return ror_abs();
+    } else if (strcmp(test_name, "ROR_ABX") == 0) {
+        return ror_abx();
+    } else if (strcmp(test_name, "RTI") == 0) {
+        return rti();
+    } else if (strcmp(test_name, "RTS") == 0) {
+        return rts();
+    } else if (strcmp(test_name, "SEC") == 0) {
+        return sec();
+    } else if (strcmp(test_name, "SED") == 0) {
+        return sed();
+    } else if (strcmp(test_name, "SEI") == 0) {
+        return sei();
+    } else if (strcmp(test_name, "STA_ZP0") == 0) {
+        return sta_zp0();
+    } else if (strcmp(test_name, "STA_ZPX") == 0) {
+        return sta_zpx();
+    } else if (strcmp(test_name, "STA_ABS") == 0) {
+        return sta_abs();
+    } else if (strcmp(test_name, "STA_ABX") == 0) {
+        return sta_abx();
+    } else if (strcmp(test_name, "STA_ABY") == 0) {
+        return sta_aby();
+    } else if (strcmp(test_name, "STA_INDX") == 0) {
+        return sta_indx();
+    } else if (strcmp(test_name, "STA_INDY") == 0) {
+        return sta_indy();
+    } else if (strcmp(test_name, "STX_ZP0") == 0) {
+        return stx_zp0();
+    } else if (strcmp(test_name, "STX_ZPY") == 0) {
+        return stx_zpy();
+    } else if (strcmp(test_name, "STX_ABS") == 0) {
+        return stx_abs();
+    } else if (strcmp(test_name, "STY_ZP0") == 0) {
+        return sty_zp0();
+    } else if (strcmp(test_name, "STY_ZPX") == 0) {
+        return sty_zpx();
+    } else if (strcmp(test_name, "STY_ABS") == 0) {
+        return sty_abs();
+    } else if (strcmp(test_name, "TAX") == 0) {
+        return tax();
+    } else if (strcmp(test_name, "TAY") == 0) {
+        return tay();
+    } else if (strcmp(test_name, "TSX") == 0) {
+        return tsx();
+    } else if (strcmp(test_name, "TXA") == 0) {
+        return txa();
+    } else if (strcmp(test_name, "TXS") == 0) {
+        return txs();
+    } else if (strcmp(test_name, "TYA") == 0) {
+        return tya();
     }
     return 1;
 }

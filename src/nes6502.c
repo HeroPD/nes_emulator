@@ -944,8 +944,10 @@ void clock(cpu6502 * state, uint8_t * ram) {
 }
 
 uint8_t char_to_hex(uint8_t a) {
-    if (a < 0x57) {
+    if (a < 0x40) {
         return a - 0x30;
+    } else if (a < 0x47) {
+        return a - 0x37;
     } else {
         return a - 0x57;
     }
