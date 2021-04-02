@@ -28,6 +28,26 @@ uint8_t IMM(cpu6502 * state) {
     return 0;
 }
 
+uint8_t ZP0(cpu6502 * state, uint8_t * ram) {
+    state->abs_addr = nesbus_read(ram, state->pc) & 0x00FF;
+    state->pc++;
+    log_debug("ZP0 - %x ", state->abs_addr);
+    return 0;
+}
+
+uint8_t ZPX(cpu6502 * state, uint8_t * ram) {
+    state->abs_addr = (nesbus_read(ram, state->pc) + state->x) & 0x00FF;
+    state->pc++;
+    log_debug("ZPX - %x ", state->abs_addr);
+    return 0;
+}
+
+uint8_t ZPY(cpu6502 * state, uint8_t * ram) {
+    state->abs_addr = (nesbus_read(ram, state->pc) + state->y) & 0x00FF;
+    state->pc++;
+    log_debug("ZPY - %x ", state->abs_addr);
+    return 0;
+}
 
 uint8_t ABS(cpu6502 * state, uint8_t * ram) {
     state->abs_addr = nesbus_read(ram, state->pc) | nesbus_read(ram, state->pc + 1) << 8;
@@ -49,27 +69,6 @@ uint8_t ABY(cpu6502 * state, uint8_t * ram) {
     state->abs_addr += state->y;
     state->pc += 2;
     log_debug("ABY - %x ", state->abs_addr);
-    return 0;
-}
-
-uint8_t ZP0(cpu6502 * state, uint8_t * ram) {
-    state->abs_addr = nesbus_read(ram, state->pc) & 0x00FF;
-    state->pc++;
-    log_debug("ZP0 - %x ", state->abs_addr);
-    return 0;
-}
-
-uint8_t ZPX(cpu6502 * state, uint8_t * ram) {
-    state->abs_addr = (nesbus_read(ram, state->pc) + state->x) & 0x00FF;
-    state->pc++;
-    log_debug("ZPX - %x ", state->abs_addr);
-    return 0;
-}
-
-uint8_t ZPY(cpu6502 * state, uint8_t * ram) {
-    state->abs_addr = (nesbus_read(ram, state->pc) + state->y) & 0x00FF;
-    state->pc++;
-    log_debug("ZPY - %x ", state->abs_addr);
     return 0;
 }
 
@@ -136,6 +135,23 @@ uint8_t AND(cpu6502 * state, uint8_t * ram) {
     set_status(state, N, state->a & 0x80);
     log_debug("AND %x", state->a);
     return 0;
+}
+
+uint8_t ASLA(cpu6502 * state, uint8_t * ram) {
+    set_status(state, C, state->a & 0x80);
+    state->a = state->a << 1;
+    set_status(state, Z, state->a == 0x00);
+    set_status(state, N, state->a & 0x80);
+    log_debug("ASL %x", state->a);
+}
+
+uint8_t ASL(cpu6502 * state, uint8_t * ram) {
+    uint8_t m = nesbus_read(ram, state->abs_addr);
+    set_status(state, C, m & 0x80);
+    state->a = m << 1;
+    set_status(state, Z, state->a == 0x00);
+    set_status(state, N, state->a & 0x80);
+    log_debug("ASL %x", state->a);
 }
 
 uint8_t BCC(cpu6502 * state) {
@@ -333,7 +349,7 @@ uint8_t INX(cpu6502 * state) {
 }
 
 uint8_t INY(cpu6502 * state) {
-    state->y = state->y - 0x01;
+    state->y = state->y + 0x01;
     set_status(state, Z, state->y == 0x00);
     set_status(state, N, state->y & 0x80);
     log_debug("INY %x", state->y);
@@ -347,12 +363,13 @@ uint8_t JMP(cpu6502 * state) {
 }
 
 uint8_t JSR(cpu6502 * state, uint8_t * ram) {
-    nesbus_write(ram, 0x0100 + state->sp, state->abs_addr >> 8);
+    state->pc--;
+    nesbus_write(ram, 0x0100 + state->sp, state->pc >> 8);
     state->sp--;
-    nesbus_write(ram, 0x0100 + state->sp, state->abs_addr & 0x00FF);
+    nesbus_write(ram, 0x0100 + state->sp, state->pc & 0x00FF);
     state->sp--;
     state->pc = state->abs_addr;
-    log_debug("JMP %x", state->pc);
+    log_debug("JSR %x %x", state->pc, state->sp);
     return 0;
 }
 
@@ -632,6 +649,16 @@ uint8_t run_instruction(uint8_t opcode, cpu6502 * state, uint8_t * ram) {
         case 0x31:
             return INDY(state, ram) + AND(state, ram);
         // ASL 3
+        case 0x0a:
+            return ASLA(state, ram);
+        case 0x06:
+            return ZP0(state, ram) + ASL(state, ram);
+        case 0x16:
+            return ZPX(state, ram) + ASL(state, ram);
+        case 0x0e:
+            return ABS(state, ram) + ASL(state, ram);
+        case 0x1e:
+            return ABX(state, ram) + ASL(state, ram);
         // BCC 4
         case 0x90:
             return REL(state, ram) + BCC(state);

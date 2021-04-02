@@ -13,7 +13,7 @@
 void display_ram(uint8_t * ram) {
     int row = 1;
     int col = 1;
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 32; i++) {
         int ccol = col;
         mvprintw(row, ccol, "%.4x",i*16);
         ccol += 5;
@@ -82,7 +82,7 @@ void display_cpustate(cpu6502 * state) {
 }
 
 void display_menu() {
-    int row = 36;
+    int row = 56;
     int col = 1;
     mvprintw(row, col, "MENU");
     row++;
@@ -106,7 +106,8 @@ int main() {
     ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
-
+    cpustate.sp = 0xff;
+    set_status(&cpustate, C, 1);
     /*source
         LDA #$01
         STA $0100
@@ -117,7 +118,7 @@ int main() {
     */
 
     // uint8_t code [] = "a9 01 8d 01 00 ad ff 00 8d 02 00 a9 08 8d 03 00";
-    uint8_t code [] = "a9 10 85 25 a9 11 85 26 a2 24 81 01 a9 01 a1 01";
+    uint8_t code [] = "a9 20 90 04 a9 12 85 20 a9 02";
     load_code(ram, cpustate, code, sizeof code);
     initscr();
     use_default_colors();
