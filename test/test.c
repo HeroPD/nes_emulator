@@ -213,9 +213,63 @@ int addr_mode_rel() {
 
 // ADC TESTS 1
 
+int adc() {
+    return 1;
+}
+
 // AND TESTS 2
+int and() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    /*source
+        AND #$22
+    */
+    uint8_t code [] = "29 22";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.a = 0xf2;
+    clock(&cpustate, ram);
+    if (cpustate.a == 0x22) {
+        return 0;
+    }
+    return 1;
+}
 
 // ASL TESTS 3
+
+int asl_a() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    /*source
+        ASL
+    */
+    uint8_t code [] = "0a";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.a = 0xf2;
+    clock(&cpustate, ram);
+    if (cpustate.a == 0xe4 && check_status(&cpustate, C) == 1) {
+        return 0;
+    }
+    return 1;
+}
+
+int asl() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    /*source
+        ASL $20
+    */
+    uint8_t code [] = "06 20";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x0020, 0xf2);
+    clock(&cpustate, ram);
+    if (cpustate.a == 0xe4 && check_status(&cpustate, C) == 1) {
+        return 0;
+    }
+    return 1;
+}
 
 // BCC TESTS 4
 
@@ -826,7 +880,7 @@ int jsr() {
     {
         clock(&cpustate, ram);
     }
-    if (cpustate.a == 0x3 && nesbus_read(ram, 0x0020) == 0x0 && nesbus_read(ram, 0x0021) == 0x3 && cpustate.sp == 0xfd && nesbus_read(ram, 0x01ff) == 0x80 && nesbus_read(ram, 0x01fe) == 0x09) {
+    if (cpustate.a == 0x3 && nesbus_read(ram, 0x0020) == 0x0 && nesbus_read(ram, 0x0021) == 0x3 && cpustate.sp == 0xfd && nesbus_read(ram, 0x01ff) == 0x80 && nesbus_read(ram, 0x01fe) == 0x04) {
         return 0;
     }
     return 1;
@@ -1103,12 +1157,43 @@ int ror_zp0() {
 // RTI TESTS 42
 
 int rti() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xfd;
+    /*source
+        RTI
+    */
+    uint8_t code [] = "40";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x01FF, 0x11);
+    nesbus_write(ram, 0x01FE, 0x12);
+    nesbus_write(ram, 0x01FD, 0x15);
+    clock(&cpustate, ram);
+    if (cpustate.status == 0x15 && cpustate.pc == 0x1211) {
+        return 0;
+    }
     return 1;
 }
 
 // RTS TESTS 43
 
 int rts() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xfe;
+    /*source
+        RTS
+    */
+    uint8_t code [] = "60";
+    load_code(ram, cpustate, code, sizeof code);
+    nesbus_write(ram, 0x01FF, 0x11);
+    nesbus_write(ram, 0x01FE, 0x12);
+    clock(&cpustate, ram);
+    if (cpustate.pc == 0x1211) {
+        return 0;
+    }
     return 1;
 }
 
@@ -1380,6 +1465,14 @@ int main(int argc, char **argv) {
         return addr_mode_indy();
     } else if (strcmp(test_name, "REL") == 0) {
         return addr_mode_rel();
+    } else if (strcmp(test_name, "ADC") == 0) {
+        return adc();
+    } else if (strcmp(test_name, "AND") == 0) {
+        return and();
+    } else if (strcmp(test_name, "ASLA") == 0) {
+        return asl_a();
+    } else if (strcmp(test_name, "ASL") == 0) {
+        return asl();
     } else if (strcmp(test_name, "BCC") == 0) {
         return bcc();
     } else if (strcmp(test_name, "BCS") == 0) {
@@ -1467,7 +1560,7 @@ int main(int argc, char **argv) {
     } else if (strcmp(test_name, "RTS") == 0) {
         return rts();
     } else if (strcmp(test_name, "SBC") == 0) {
-        return rts();
+        return sbc();
     } else if (strcmp(test_name, "SEC") == 0) {
         return sec();
     } else if (strcmp(test_name, "SED") == 0) {

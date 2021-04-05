@@ -13,6 +13,13 @@ add_test(NAME "REL" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "REL")
 
 # Testing instructions
 
+add_test(NAME "ADC" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "ADC")
+
+add_test(NAME "AND" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "AND")
+
+add_test(NAME "ASLA" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "ASLA")
+add_test(NAME "ASL" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "ASL")
+
 add_test(NAME "BCC" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "BCC")
 add_test(NAME "BCS" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "BCS")
 add_test(NAME "BEQ" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "BEQ")
