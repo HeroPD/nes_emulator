@@ -1247,6 +1247,20 @@ int rts() {
 // SBC TESTS 44
 
 int sbc() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    cpustate.sp = 0xfe;
+    /*source
+        SBC #$7f
+    */
+    uint8_t code [] = "e9 7f";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.a = 0x81;
+    clock(&cpustate, ram);
+    if (cpustate.a == 0x01 && check_status(&cpustate, C) && !check_status(&cpustate, N) && check_status(&cpustate, V)) {
+        return 0;
+    }
     return 1;
 }
 

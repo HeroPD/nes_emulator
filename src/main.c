@@ -113,7 +113,7 @@ int main() {
     */
 
     // uint8_t code [] = "a9 01 8d 01 00 ad ff 00 8d 02 00 a9 08 8d 03 00";
-    uint8_t code [] = "a9 ce 69 70";
+    uint8_t code [] = "a9 81 e9 7f";
     load_code(ram, cpustate, code, sizeof code);
     initscr();
     use_default_colors();

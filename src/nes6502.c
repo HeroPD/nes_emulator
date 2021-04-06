@@ -519,9 +519,20 @@ uint8_t RTS(cpu6502 * state, uint8_t * ram) {
 }
 
 uint8_t SBC(cpu6502 * state, uint8_t * ram) {
-    uint8_t m = nesbus_read(ram, state->abs_addr);
-    uint16_t v = state->a - m - (1 - check_status(state, C));
-    
+    uint8_t m = nesbus_read(ram, state->abs_addr) ^ 0xFF;
+    uint16_t val = ((uint16_t)state->a & 0x00FF) + ((uint16_t)m & 0x00FF) + ((uint16_t)check_status(state, C) & 0x00FF);
+    if (((state->a & m) & 0x80) == 0x80 && (val & 0x80) == 0x00) {
+        set_status(state, V, 1);
+    } else if (((state->a | m) & 0x80) == 0x00 && (val & 0x80) == 0x80) {
+        set_status(state, V, 1);
+    } else {
+        set_status(state, V, 0);
+    }
+    set_status(state, C, val & 0x0F00);
+    state->a = val & 0x00FF;
+    set_status(state, N, state->a & 0x80);
+    set_status(state, Z, state->a == 0x00);
+    log_debug("SBC %x", state->a);
     return 0;
 }
 
@@ -904,7 +915,8 @@ uint8_t run_instruction(uint8_t opcode, cpu6502 * state, uint8_t * ram) {
         case 0x60:
             return IMP(state) + RTS(state, ram);
         // SBC 44
-
+        case 0xe9:
+            return IMM(state) + SBC(state, ram);
         // SEC 45
         case 0x38:
             return IMP(state) + SEC(state);
