@@ -113,7 +113,8 @@ uint8_t REL(cpu6502 * state, uint8_t * ram) {
 
 uint8_t ADC(cpu6502 * state, uint8_t * ram) {
     uint8_t m = nesbus_read(ram, state->abs_addr);
-    uint16_t val = m & 0x00FF + state->a & 0x00FF + check_status(state, C);
+    uint16_t c = ((uint16_t)m & 0x00FF) + 0xf0;
+    uint16_t val = ((uint16_t)m & 0x00FF) + ((uint16_t)state->a & 0x00FF) + ((uint16_t)check_status(state, C) & 0x000F);
     if (((state->a & m) & 0x80) == 0x80 && (val & 0x80) == 0x00) {
         set_status(state, V, 1);
     } else if (((state->a | m) & 0x80) == 0x00 && (val & 0x80) == 0x80) {
@@ -125,6 +126,7 @@ uint8_t ADC(cpu6502 * state, uint8_t * ram) {
     state->a = val & 0x00FF;
     set_status(state, N, state->a & 0x80);
     set_status(state, Z, state->a == 0x00);
+    log_debug("ADC %x", state->a);
     return 0;
 }
 
@@ -143,6 +145,7 @@ uint8_t ASLA(cpu6502 * state, uint8_t * ram) {
     set_status(state, Z, state->a == 0x00);
     set_status(state, N, state->a & 0x80);
     log_debug("ASL %x", state->a);
+    return 0;
 }
 
 uint8_t ASL(cpu6502 * state, uint8_t * ram) {
@@ -152,6 +155,7 @@ uint8_t ASL(cpu6502 * state, uint8_t * ram) {
     set_status(state, Z, state->a == 0x00);
     set_status(state, N, state->a & 0x80);
     log_debug("ASL %x", state->a);
+    return 0;
 }
 
 uint8_t BCC(cpu6502 * state) {

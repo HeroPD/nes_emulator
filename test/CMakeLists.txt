@@ -14,6 +14,8 @@ add_test(NAME "REL" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "REL")
 # Testing instructions
 
 add_test(NAME "ADC" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "ADC")
+add_test(NAME "ADC_OVERFLOW1" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "ADC_OVERFLOW1")
+add_test(NAME "ADC_OVERFLOW2" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "ADC_OVERFLOW2")
 
 add_test(NAME "AND" COMMAND ${CMAKE_BINARY_DIR}/unit_tests "AND")
 

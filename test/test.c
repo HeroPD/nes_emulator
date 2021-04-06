@@ -214,6 +214,53 @@ int addr_mode_rel() {
 // ADC TESTS 1
 
 int adc() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    /*source
+        ADC #$de
+    */
+    uint8_t code [] = "69 de";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.a = 0xf0;
+    clock(&cpustate, ram);
+    if (cpustate.a == 0xce && check_status(&cpustate, C) && check_status(&cpustate, N)) {
+        return 0;
+    }
+    return 1;
+}
+
+int adc_overflow1() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    /*source
+        ADC #$64
+    */
+    uint8_t code [] = "69 64";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.a = 0x64;
+    clock(&cpustate, ram);
+    if (cpustate.a == 0xc8 && !check_status(&cpustate, C) && check_status(&cpustate, N) && check_status(&cpustate, V)) {
+        return 0;
+    }
+    return 1;
+}
+
+int adc_overflow2() {
+    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    cpu6502 cpustate;
+    cpustate.pc = 0x8000;
+    /*source
+        ADC #$81
+    */
+    uint8_t code [] = "69 81";
+    load_code(ram, cpustate, code, sizeof code);
+    cpustate.a = 0x81;
+    clock(&cpustate, ram);
+    if (cpustate.a == 0x02 && check_status(&cpustate, C) && !check_status(&cpustate, N) && check_status(&cpustate, V)) {
+        return 0;
+    }
     return 1;
 }
 
@@ -1467,6 +1514,10 @@ int main(int argc, char **argv) {
         return addr_mode_rel();
     } else if (strcmp(test_name, "ADC") == 0) {
         return adc();
+    } else if (strcmp(test_name, "ADC_OVERFLOW1") == 0) {
+        return adc_overflow1();
+    } else if (strcmp(test_name, "ADC_OVERFLOW2") == 0) {
+        return adc_overflow2();
     } else if (strcmp(test_name, "AND") == 0) {
         return and();
     } else if (strcmp(test_name, "ASLA") == 0) {

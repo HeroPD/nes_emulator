@@ -107,18 +107,13 @@ int main() {
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
-    set_status(&cpustate, C, 1);
     /*source
-        LDA #$01
-        STA $0100
-        LDA #$05
-        STA $0200
-        LDA #$08
-        STA $0300
+        LDA #$f0
+        ADC #$de
     */
 
     // uint8_t code [] = "a9 01 8d 01 00 ad ff 00 8d 02 00 a9 08 8d 03 00";
-    uint8_t code [] = "a9 20 90 04 a9 12 85 20 a9 02";
+    uint8_t code [] = "a9 ce 69 70";
     load_code(ram, cpustate, code, sizeof code);
     initscr();
     use_default_colors();
