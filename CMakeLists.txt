@@ -22,17 +22,25 @@ add_library(cpu6502
     src/bus.c
     src/nes6502.c
 )
+add_library(nes
+    src/rom.c
+    # src/ppu.c
+)
 
 add_executable(Main src/main.c)
 target_link_libraries(Main 
     ${CURSES_LIBRARIES}
     log
     cpu6502
+    nes
 )
 
 add_executable(GtkUI src/ui.c)
 target_link_libraries(GtkUI
     ${GTK4_LIBRARIES}
+    log
+    cpu6502
+    nes
 )
 
 enable_testing()
@@ -41,6 +49,7 @@ add_executable(unit_tests test/test.c)
 target_link_libraries(unit_tests
     log
     cpu6502
+    nes
 )
 
 add_subdirectory(test)
