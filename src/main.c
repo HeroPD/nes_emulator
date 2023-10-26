@@ -6,11 +6,12 @@
 #include <unistd.h>
 #include "nes6502.h"
 #include "log.h"
+#include "rom.h"
 
 #define REDPAIR 1
 #define GREENPAIR 2
 
-void display_ram(uint8_t * ram) {
+void display_ram(Bus * bus) {
     int row = 1;
     int col = 1;
     for (int i = 0; i < 32; i++) {
@@ -18,7 +19,7 @@ void display_ram(uint8_t * ram) {
         mvprintw(row, ccol, "%.4x",i*16);
         ccol += 5;
         for (int j = 0; j < 16; j++) {
-            mvprintw(row, ccol, "%.2x", nesbus_read(ram, i * 16 + j));
+            mvprintw(row, ccol, "%.2x", nesbus_read(bus, i * 16 + j));
             ccol += 3;
         }
         row++;
@@ -29,7 +30,7 @@ void display_ram(uint8_t * ram) {
         mvprintw(row, ccol, "%.4x", i*16);
         ccol += 5;
         for (int j = 0; j < 16; j++) {
-            mvprintw(row, ccol, "%.2x", nesbus_read(ram, i * 16 + j));
+            mvprintw(row, ccol, "%.2x", nesbus_read(bus, i * 16 + j));
             ccol += 3;
         }
         row++;
@@ -89,8 +90,8 @@ void display_menu() {
     mvprintw(row, col, "Press C: STEP    Press R: Reset");
 }
 
-void display_render(cpu6502 * state, uint8_t * ram) {
-	display_ram(ram);
+void display_render(cpu6502 * state, Bus * bus) {
+	display_ram(bus);
     display_cpustate(state);
     display_menu();
     refresh();
@@ -100,10 +101,10 @@ int main() {
     init_logfile();
     log_debug("\n\nEmulator started\n\n");
     // RAM connected to CPU BUS
-    uint8_t * ram;
+    Bus bus;
     // accumulator
     
-    ram = calloc(64 * 1024, sizeof(uint8_t));
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -114,7 +115,7 @@ int main() {
 
     // uint8_t code [] = "a9 01 8d 01 00 ad ff 00 8d 02 00 a9 08 8d 03 00";
     uint8_t code [] = "a9 81 e9 7f";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     initscr();
     use_default_colors();
     start_color();
@@ -122,11 +123,11 @@ int main() {
     init_pair(GREENPAIR, COLOR_GREEN, -1);
     int isBreak = 1; 
     while (isBreak) {
-        display_render(&cpustate, ram);
+        display_render(&cpustate, &bus);
         char c = getch();
         switch (c) {
             case 'c':
-                clock(&cpustate, ram);
+                nes_clock(&cpustate, &bus);
                 break;
             case 'r':
                 break;

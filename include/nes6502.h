@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "stdbool.h"
+#include "bus.h"
 
 typedef struct
 {
@@ -35,6 +36,6 @@ bool check_status(cpu6502 * state, StatusType type);
 void reset(cpu6502 state);
 void irq(cpu6502 state);
 void nmi(cpu6502 state);
-void clock(cpu6502 * state, uint8_t * ram);
+void nes_clock(cpu6502 * state, Bus * bus);
 
-void load_code(uint8_t * ram, cpu6502 state, uint8_t code [], int code_size);
+void load_code(Bus * bus, cpu6502 state, uint8_t code [], int code_size);

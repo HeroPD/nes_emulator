@@ -8,15 +8,16 @@
 
 // IMM TEST 1
 int addr_mode_imm() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate; 
     cpustate.pc = 0x8000;
     /*source
         LDA #$20
     */
     uint8_t code [] = "a9 20";
-    load_code(ram, cpustate, code, sizeof code);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x20 && cpustate.abs_addr == cpustate.pc - 1) {
         return 0;
     }
@@ -25,16 +26,17 @@ int addr_mode_imm() {
 
 // ZP0 TEST 2
 int addr_mode_zp0() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate; 
     cpustate.pc = 0x8000;
     /*source
         LDA $20
     */
     uint8_t code [] = "a5 20";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x0020, 0x15);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x0020, 0x15);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x15 && cpustate.abs_addr == 0x20) {
         return 0;
     }
@@ -43,17 +45,18 @@ int addr_mode_zp0() {
 
 // ZPX TEST 3
 int addr_mode_zpx() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate; 
     cpustate.pc = 0x8000;
     /*source
         LDA $20, X
     */
     uint8_t code [] = "b5 20";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.x = 0x05;
-    nesbus_write(ram, 0x0025, 0x15);
-    clock(&cpustate, ram);
+    nesbus_write(&bus, 0x0025, 0x15);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x15 && cpustate.abs_addr == 0x25) {
         return 0;
     }
@@ -62,17 +65,18 @@ int addr_mode_zpx() {
 
 // ZPY TEST 4
 int addr_mode_zpy() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate; 
     cpustate.pc = 0x8000;
     /*source
         LDX $20, Y
     */
     uint8_t code [] = "B6 20";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.y = 0x05;
-    nesbus_write(ram, 0x0025, 0x15);
-    clock(&cpustate, ram);
+    nesbus_write(&bus, 0x0025, 0x15);
+    nes_clock(&cpustate, &bus);
     if (cpustate.x == 0x15 && cpustate.abs_addr == 0x25) {
         return 0;
     }
@@ -81,16 +85,17 @@ int addr_mode_zpy() {
 
 // ABS TEST 5
 int addr_mode_abs() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate; 
     cpustate.pc = 0x8000;
     /*source
         LDA $0120
     */
     uint8_t code [] = "ad 20 01";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x0120, 0x15);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x0120, 0x15);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x15 && cpustate.abs_addr == 0x0120) {
         return 0;
     }
@@ -99,17 +104,18 @@ int addr_mode_abs() {
 
 // ABX TEST 6
 int addr_mode_abx() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate; 
     cpustate.pc = 0x8000;
     /*source
         LDA $0120, X
     */
     uint8_t code [] = "bd 20 01";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.x = 0x05;
-    nesbus_write(ram, 0x0125, 0x15);
-    clock(&cpustate, ram);
+    nesbus_write(&bus, 0x0125, 0x15);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x15 && cpustate.abs_addr == 0x0125) {
         return 0;
     }
@@ -118,17 +124,18 @@ int addr_mode_abx() {
 
 // ABY TEST 7
 int addr_mode_aby() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate; 
     cpustate.pc = 0x8000;
     /*source
         LDA $0120, y
     */
     uint8_t code [] = "b9 20 01";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.y = 0x05;
-    nesbus_write(ram, 0x0125, 0x15);
-    clock(&cpustate, ram);
+    nesbus_write(&bus, 0x0125, 0x15);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x15 && cpustate.abs_addr == 0x0125) {
         return 0;
     }
@@ -137,17 +144,18 @@ int addr_mode_aby() {
 
 // IND TEST 8
 int addr_mode_ind() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate; 
     cpustate.pc = 0x8000;
     /*source
         JMP ($0009)
     */
     uint8_t code [] = "6c 09 00";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x0009, 0x09);
-    nesbus_write(ram, 0x000a, 0x80);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x0009, 0x09);
+    nesbus_write(&bus, 0x000a, 0x80);
+    nes_clock(&cpustate, &bus);
     if (cpustate.abs_addr == 0x8009) {
         return 0;
     }
@@ -156,18 +164,19 @@ int addr_mode_ind() {
 
 // INDX TEST 9
 int addr_mode_indx() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate; 
     cpustate.pc = 0x8000;
     /*source
         LDA ($09, X)
     */
     uint8_t code [] = "a1 09";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x000e, 0x09);
-    nesbus_write(ram, 0x000f, 0x80);
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x000e, 0x09);
+    nesbus_write(&bus, 0x000f, 0x80);
     cpustate.x = 0x05;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.abs_addr == 0x8009) {
         return 0;
     }
@@ -176,18 +185,19 @@ int addr_mode_indx() {
 
 // INDY TEST 10
 int addr_mode_indy() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate; 
     cpustate.pc = 0x8000;
     /*source
         LDA ($09), Y
     */
     uint8_t code [] = "b1 09";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x0009, 0x09);
-    nesbus_write(ram, 0x000a, 0x80);
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x0009, 0x09);
+    nesbus_write(&bus, 0x000a, 0x80);
     cpustate.y = 0x05;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.abs_addr == 0x800e) {
         return 0;
     }
@@ -196,15 +206,16 @@ int addr_mode_indy() {
 
 // REL TEST 11
 int addr_mode_rel() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate; 
     cpustate.pc = 0x8000;
     /*source
         BCC 04
     */
     uint8_t code [] = "90 04";
-    load_code(ram, cpustate, code, sizeof code);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nes_clock(&cpustate, &bus);
     if (cpustate.rel_addr == 0x04) {
         return 0;
     }
@@ -214,16 +225,17 @@ int addr_mode_rel() {
 // ADC TESTS 1
 
 int adc() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         ADC #$de
     */
     uint8_t code [] = "69 de";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0xf0;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0xce && check_status(&cpustate, C) && check_status(&cpustate, N)) {
         return 0;
     }
@@ -231,16 +243,17 @@ int adc() {
 }
 
 int adc_overflow1() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         ADC #$64
     */
     uint8_t code [] = "69 64";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0x64;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0xc8 && !check_status(&cpustate, C) && check_status(&cpustate, N) && check_status(&cpustate, V)) {
         return 0;
     }
@@ -248,16 +261,17 @@ int adc_overflow1() {
 }
 
 int adc_overflow2() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         ADC #$81
     */
     uint8_t code [] = "69 81";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0x81;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x02 && check_status(&cpustate, C) && !check_status(&cpustate, N) && check_status(&cpustate, V)) {
         return 0;
     }
@@ -266,16 +280,17 @@ int adc_overflow2() {
 
 // AND TESTS 2
 int and() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         AND #$22
     */
     uint8_t code [] = "29 22";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0xf2;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x22) {
         return 0;
     }
@@ -285,16 +300,17 @@ int and() {
 // ASL TESTS 3
 
 int asl_a() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         ASL
     */
     uint8_t code [] = "0a";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0xf2;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0xe4 && check_status(&cpustate, C) == 1) {
         return 0;
     }
@@ -302,16 +318,17 @@ int asl_a() {
 }
 
 int asl() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         ASL $20
     */
     uint8_t code [] = "06 20";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x0020, 0xf2);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x0020, 0xf2);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0xe4 && check_status(&cpustate, C) == 1) {
         return 0;
     }
@@ -321,7 +338,8 @@ int asl() {
 // BCC TESTS 4
 
 int bcc() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate; 
     cpustate.pc = 0x8000;
     set_status(&cpustate, C, 0);
@@ -334,10 +352,10 @@ int bcc() {
         LDA #$02
     */
     uint8_t code [] = "a9 20 90 04 a9 12 85 20 a9 02";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     for (int i = 0; i < 3; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
     if (cpustate.a == 0x02) {
         return 0;
@@ -348,7 +366,8 @@ int bcc() {
 // BCS TESTS 5
 
 int bcs() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, C, 1);
@@ -361,10 +380,10 @@ int bcs() {
         LDA #$02
     */
     uint8_t code [] = "a9 20 b0 04 a9 12 85 20 a9 02";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     for (int i = 0; i < 3; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
     if (cpustate.a == 0x02) {
         return 0;
@@ -375,7 +394,8 @@ int bcs() {
 // BEQ TESTS 6
 
 int beq() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, Z, 1);
@@ -387,10 +407,10 @@ int beq() {
         LDA #$02
     */
     uint8_t code [] = "f0 04 a9 12 85 20 a9 02";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     for (int i = 0; i < 2; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
     if (cpustate.a == 0x02) {
         return 0;
@@ -401,7 +421,8 @@ int beq() {
 // BIT TESTS 7
 
 int bit() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
@@ -411,10 +432,10 @@ int bit() {
         BIT $20
     */
     uint8_t code [] = "a9 f2 85 20 a9 81 24 20";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     for (int i = 0; i < 4; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
     
     if (check_status(&cpustate, N) && check_status(&cpustate, V)) {
@@ -426,7 +447,8 @@ int bit() {
 // BMI TESTS 8
 
 int bmi() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, N, 1);
@@ -438,10 +460,10 @@ int bmi() {
         LDA #$02
     */
     uint8_t code [] = "30 04 a9 12 85 20 a9 02";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     for (int i = 0; i < 2; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
     if (cpustate.a == 0x02) {
         return 0;
@@ -452,7 +474,8 @@ int bmi() {
 // BNE TESTS 9
 
 int bne() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, Z, 0);
@@ -464,10 +487,10 @@ int bne() {
         LDA #$02
     */
     uint8_t code [] = "d0 04 a9 12 85 20 a9 02";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     for (int i = 0; i < 2; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
     if (cpustate.a == 0x02) {
         return 0;
@@ -478,7 +501,8 @@ int bne() {
 // BPL TESTS 10
 
 int bpl() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, N, 0);
@@ -490,10 +514,10 @@ int bpl() {
         LDA #$02
     */
     uint8_t code [] = "10 04 a9 12 85 20 a9 02";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     for (int i = 0; i < 2; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
     if (cpustate.a == 0x02) {
         return 0;
@@ -505,7 +529,8 @@ int bpl() {
 // BVC TESTS 12
 
 int bvc() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, V, 0);
@@ -517,10 +542,10 @@ int bvc() {
         LDA #$02
     */
     uint8_t code [] = "50 04 a9 12 85 20 a9 02";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     for (int i = 0; i < 2; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
     if (cpustate.a == 0x02) {
         return 0;
@@ -531,7 +556,8 @@ int bvc() {
 // BVS TESTS 13
 
 int bvs() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, V, 1);
@@ -543,10 +569,10 @@ int bvs() {
         LDA #$02
     */
     uint8_t code [] = "70 04 a9 12 85 20 a9 02";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     for (int i = 0; i < 2; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
     if (cpustate.a == 0x02) {
         return 0;
@@ -557,7 +583,8 @@ int bvs() {
 // CLC TESTS 14
 
 int clc() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, C, 1);
@@ -565,8 +592,8 @@ int clc() {
         CLC
     */
     uint8_t code [] = "18";
-    load_code(ram, cpustate, code, sizeof code);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nes_clock(&cpustate, &bus);
     if (!check_status(&cpustate, C)) {
         return 0;
     }
@@ -576,7 +603,8 @@ int clc() {
 // CLD TESTS 15
 
 int cld() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, D, 1);
@@ -584,8 +612,8 @@ int cld() {
         CLD
     */
     uint8_t code [] = "d8";
-    load_code(ram, cpustate, code, sizeof code);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nes_clock(&cpustate, &bus);
     if (!check_status(&cpustate, D)) {
         return 0;
     }
@@ -595,7 +623,8 @@ int cld() {
 // CLI TEST 16
 
 int cli() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, I, 1);
@@ -603,8 +632,8 @@ int cli() {
         CLI
     */
     uint8_t code [] = "58";
-    load_code(ram, cpustate, code, sizeof code);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nes_clock(&cpustate, &bus);
     if (!check_status(&cpustate, I)) {
         return 0;
     }
@@ -614,7 +643,8 @@ int cli() {
 // CLV TEST 17
 
 int clv() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, V, 1);
@@ -622,8 +652,8 @@ int clv() {
         CLV
     */
     uint8_t code [] = "b8";
-    load_code(ram, cpustate, code, sizeof code);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nes_clock(&cpustate, &bus);
     if (!check_status(&cpustate, V)) {
         return 0;
     }
@@ -633,7 +663,8 @@ int clv() {
 // CMP TEST 18
 
 int cmp_imm() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, C, 0);
@@ -641,9 +672,9 @@ int cmp_imm() {
         CMP #$20
     */
     uint8_t code [] = "c9 20 ";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0x21;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (check_status(&cpustate, C)) {
         return 0;
     }
@@ -653,7 +684,8 @@ int cmp_imm() {
 // CPX TEST 19
 
 int cpx_imm() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, C, 0);
@@ -661,9 +693,9 @@ int cpx_imm() {
         CMP #$20
     */
     uint8_t code [] = "e0 20";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.x = 0x21;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (check_status(&cpustate, C)) {
         return 0;
     }
@@ -673,7 +705,8 @@ int cpx_imm() {
 // CPY TEST 20
 
 int cpy_imm() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     set_status(&cpustate, C, 0);
@@ -681,9 +714,9 @@ int cpy_imm() {
         CMP #$20
     */
     uint8_t code [] = "c0 20";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.y = 0x21;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (check_status(&cpustate, C)) {
         return 0;
     }
@@ -693,17 +726,18 @@ int cpy_imm() {
 // DEC TEST 21
 
 int dec_zp0() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         DEC $20
     */
     uint8_t code [] = "c6 20";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x0020, 0x20);
-    clock(&cpustate, ram);
-    if (nesbus_read(ram, 0x0020) == 0x1f) {
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x0020, 0x20);
+    nes_clock(&cpustate, &bus);
+    if (nesbus_read(&bus, 0x0020) == 0x1f) {
         return 0;
     }
     return 1;
@@ -712,16 +746,17 @@ int dec_zp0() {
 // DEX TEST 22
 
 int dex() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         DEX
     */
     uint8_t code [] = "ca";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.x = 0x20;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.x == 0x1f) {
         return 0;
     }
@@ -731,16 +766,17 @@ int dex() {
 // DEY TEST 23
 
 int dey() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         DEY
     */
     uint8_t code [] = "88";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.y = 0x20;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.y == 0x1f) {
         return 0;
     }
@@ -750,16 +786,17 @@ int dey() {
 // EOR TEST 24
 
 int eor_imm() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         EOR #$21
     */
     uint8_t code [] = "49 21";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0x20;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == (0x20 ^ 0x21)) {
         return 0;
     }
@@ -769,17 +806,18 @@ int eor_imm() {
 // INC TEST 25
 
 int inc_zp0() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         INC $20
     */
     uint8_t code [] = "e6 20";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x0020, 0x15);
-    clock(&cpustate, ram);
-    if (nesbus_read(ram, 0x0020) == 0x16) {
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x0020, 0x15);
+    nes_clock(&cpustate, &bus);
+    if (nesbus_read(&bus, 0x0020) == 0x16) {
         return 0;
     }
     return 1;
@@ -788,16 +826,17 @@ int inc_zp0() {
 // INX TEST 26
 
 int inx() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         INX
     */
     uint8_t code [] = "e8";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.x = 0x15;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.x == 0x16) {
         return 0;
     }
@@ -807,16 +846,17 @@ int inx() {
 // INY TEST 27
 
 int iny() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         INY
     */
     uint8_t code [] = "c8";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.y = 0x15;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.y == 0x16) {
         return 0;
     }
@@ -826,7 +866,8 @@ int iny() {
 // JMP TEST 28
 
 int jmp_abs() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
@@ -839,20 +880,21 @@ int jmp_abs() {
         STA $21
     */
     uint8_t code [] = "a0 15 4c 09 80 a9 12 85 20 a9 03 85 21 ";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     for (int i = 0; i < 4; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
 
-    if (cpustate.a == 0x3 && nesbus_read(ram, 0x0020) == 0x0 && nesbus_read(ram, 0x0021) == 0x3) {
+    if (cpustate.a == 0x3 && nesbus_read(&bus, 0x0020) == 0x0 && nesbus_read(&bus, 0x0021) == 0x3) {
         return 0;
     }
     return 1;
 }
 
 int jmp_ind() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
@@ -864,22 +906,23 @@ int jmp_ind() {
         STA $21
     */
     uint8_t code [] = "a0 15 6c 09 00 a9 12 85 20 a9 03 85 21";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x0009, 0x09);
-    nesbus_write(ram, 0x000a, 0x80);
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x0009, 0x09);
+    nesbus_write(&bus, 0x000a, 0x80);
     for (int i = 0; i < 4; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
 
-    if (cpustate.a == 0x3 && nesbus_read(ram, 0x0020) == 0x0 && nesbus_read(ram, 0x0021) == 0x3) {
+    if (cpustate.a == 0x3 && nesbus_read(&bus, 0x0020) == 0x0 && nesbus_read(&bus, 0x0021) == 0x3) {
         return 0;
     }
     return 1;
 }
 
 int jmp_ind_bug() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
@@ -891,15 +934,15 @@ int jmp_ind_bug() {
         STA $21
     */
     uint8_t code [] = "a0 15 6c ff 03 a9 12 85 20 a9 03 85 21";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x03ff, 0x09);
-    nesbus_write(ram, 0x0300, 0x80);
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x03ff, 0x09);
+    nesbus_write(&bus, 0x0300, 0x80);
     for (int i = 0; i < 4; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
 
-    if (cpustate.a == 0x3 && nesbus_read(ram, 0x0020) == 0x0 && nesbus_read(ram, 0x0021) == 0x3) {
+    if (cpustate.a == 0x3 && nesbus_read(&bus, 0x0020) == 0x0 && nesbus_read(&bus, 0x0021) == 0x3) {
         return 0;
     }
     return 1;
@@ -908,7 +951,8 @@ int jmp_ind_bug() {
 // JSR TEST 29
 
 int jsr() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -922,12 +966,12 @@ int jsr() {
         STA $21
     */
     uint8_t code [] = "a0 15 20 09 80 a9 12 85 20 a9 03 85 21";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     for (int i = 0; i < 4; i++)
     {
-        clock(&cpustate, ram);
+        nes_clock(&cpustate, &bus);
     }
-    if (cpustate.a == 0x3 && nesbus_read(ram, 0x0020) == 0x0 && nesbus_read(ram, 0x0021) == 0x3 && cpustate.sp == 0xfd && nesbus_read(ram, 0x01ff) == 0x80 && nesbus_read(ram, 0x01fe) == 0x04) {
+    if (cpustate.a == 0x3 && nesbus_read(&bus, 0x0020) == 0x0 && nesbus_read(&bus, 0x0021) == 0x3 && cpustate.sp == 0xfd && nesbus_read(&bus, 0x01ff) == 0x80 && nesbus_read(&bus, 0x01fe) == 0x04) {
         return 0;
     }
     return 1;
@@ -935,15 +979,16 @@ int jsr() {
 
 // LDA TESTS 30
 int lda_imm() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         LDA #$25
     */
     uint8_t code [] = "a9 25";
-    load_code(ram, cpustate, code, sizeof code);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x25) {
         return 0;
     }
@@ -953,15 +998,16 @@ int lda_imm() {
 // LDX TESTS 31
 
 int ldx_imm() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         LDX #$25
     */
     uint8_t code [] = "a2 26";
-    load_code(ram, cpustate, code, sizeof code);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nes_clock(&cpustate, &bus);
     if (cpustate.x == 0x26) {
         return 0;
     }
@@ -971,15 +1017,16 @@ int ldx_imm() {
 // LDY TESTS 32
 
 int ldy_imm() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         LDY #$f2
     */
     uint8_t code [] = "a0 f2";
-    load_code(ram, cpustate, code, sizeof code);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nes_clock(&cpustate, &bus);
     if (cpustate.y == 0xf2) {
         return 0;
     }
@@ -989,16 +1036,17 @@ int ldy_imm() {
 // LSR TESTS 33
 
 int lsr_a() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         LSR A
     */
     uint8_t code [] = "4a";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0x20;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x10) {
         return 0;
     }
@@ -1006,17 +1054,18 @@ int lsr_a() {
 }
 
 int lsr_zp0() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         LSR $20
     */
     uint8_t code [] = "46 20";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x0020, 0x20);
-    clock(&cpustate, ram);
-    if (nesbus_read(ram, 0x0020) == 0x10) {
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x0020, 0x20);
+    nes_clock(&cpustate, &bus);
+    if (nesbus_read(&bus, 0x0020) == 0x10) {
         return 0;
     }
     return 1;
@@ -1027,16 +1076,17 @@ int lsr_zp0() {
 // ORA TESTS 35
 
 int ora_imm() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         ORA #$20
     */
     uint8_t code [] = "09 20";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0x11;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x31) {
         return 0;
     }
@@ -1046,18 +1096,19 @@ int ora_imm() {
 // PHA TESTS 36
 
 int pha() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         PHA
     */
     uint8_t code [] = "48";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.sp = 0xff;
     cpustate.a = 0x11;
-    clock(&cpustate, ram);
-    if (nesbus_read(ram, 0x01ff) == 0x11 && cpustate.sp == 0xfe) {
+    nes_clock(&cpustate, &bus);
+    if (nesbus_read(&bus, 0x01ff) == 0x11 && cpustate.sp == 0xfe) {
         return 0;
     }
     return 1;
@@ -1066,18 +1117,19 @@ int pha() {
 // PHP TESTS 37
 
 int php() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     /*source
         PHP
     */
     uint8_t code [] = "08";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.sp = 0xff;
     cpustate.status = 0x31;
-    clock(&cpustate, ram);
-    if (nesbus_read(ram, 0x01ff) == 0x031 && cpustate.sp == 0xfe) {
+    nes_clock(&cpustate, &bus);
+    if (nesbus_read(&bus, 0x01ff) == 0x031 && cpustate.sp == 0xfe) {
         return 0;
     }
     return 1;
@@ -1086,7 +1138,8 @@ int php() {
 // PLA TESTS 38
 
 int pla() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1094,10 +1147,10 @@ int pla() {
         PLA
     */
     uint8_t code [] = "68";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x01ff, 0xf2);
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x01ff, 0xf2);
     cpustate.sp = 0xfe;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.sp == 0xff && cpustate.a == 0xf2) {
         return 0;
     }
@@ -1107,7 +1160,8 @@ int pla() {
 // PLP TESTS 39
 
 int plp() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1115,10 +1169,10 @@ int plp() {
         PLP
     */
     uint8_t code [] = "28";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x01ff, 0xf2);
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x01ff, 0xf2);
     cpustate.sp = 0xfe;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.sp == 0xff && cpustate.status == 0xf2) {
         return 0;
     }
@@ -1128,7 +1182,8 @@ int plp() {
 // ROL TESTS 40
 
 int rol_a() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1136,9 +1191,9 @@ int rol_a() {
         ROL A
     */
     uint8_t code [] = "2a";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0x21;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x42) {
         return 0;
     }
@@ -1146,7 +1201,8 @@ int rol_a() {
 }
 
 int rol_zp0() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1154,10 +1210,10 @@ int rol_zp0() {
         ROL $20
     */
     uint8_t code [] = "26 20";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x0020, 0x21);
-    clock(&cpustate, ram);
-    if (nesbus_read(ram, 0x0020) == 0x42) {
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x0020, 0x21);
+    nes_clock(&cpustate, &bus);
+    if (nesbus_read(&bus, 0x0020) == 0x42) {
         return 0;
     }
     return 1;
@@ -1166,7 +1222,8 @@ int rol_zp0() {
 // ROR TESTS 41
 
 int ror_a() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1174,9 +1231,9 @@ int ror_a() {
         ROR A
     */
     uint8_t code [] = "6a";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0x21;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x10) {
         return 0;
     }
@@ -1184,7 +1241,8 @@ int ror_a() {
 }
 
 int ror_zp0() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1192,10 +1250,10 @@ int ror_zp0() {
         ROR $20
     */
     uint8_t code [] = "66 20";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x0020, 0x21);
-    clock(&cpustate, ram);
-    if (nesbus_read(ram, 0x0020) == 0x10) {
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x0020, 0x21);
+    nes_clock(&cpustate, &bus);
+    if (nesbus_read(&bus, 0x0020) == 0x10) {
         return 0;
     }
     return 1;
@@ -1204,7 +1262,8 @@ int ror_zp0() {
 // RTI TESTS 42
 
 int rti() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xfd;
@@ -1212,11 +1271,11 @@ int rti() {
         RTI
     */
     uint8_t code [] = "40";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x01FF, 0x11);
-    nesbus_write(ram, 0x01FE, 0x12);
-    nesbus_write(ram, 0x01FD, 0x15);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x01FF, 0x11);
+    nesbus_write(&bus, 0x01FE, 0x12);
+    nesbus_write(&bus, 0x01FD, 0x15);
+    nes_clock(&cpustate, &bus);
     if (cpustate.status == 0x15 && cpustate.pc == 0x1211) {
         return 0;
     }
@@ -1226,7 +1285,8 @@ int rti() {
 // RTS TESTS 43
 
 int rts() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xfe;
@@ -1234,10 +1294,10 @@ int rts() {
         RTS
     */
     uint8_t code [] = "60";
-    load_code(ram, cpustate, code, sizeof code);
-    nesbus_write(ram, 0x01FF, 0x11);
-    nesbus_write(ram, 0x01FE, 0x12);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nesbus_write(&bus, 0x01FF, 0x11);
+    nesbus_write(&bus, 0x01FE, 0x12);
+    nes_clock(&cpustate, &bus);
     if (cpustate.pc == 0x1211) {
         return 0;
     }
@@ -1247,7 +1307,8 @@ int rts() {
 // SBC TESTS 44
 
 int sbc() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xfe;
@@ -1255,9 +1316,9 @@ int sbc() {
         SBC #$7f
     */
     uint8_t code [] = "e9 7f";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0x81;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x01 && check_status(&cpustate, C) && !check_status(&cpustate, N) && check_status(&cpustate, V)) {
         return 0;
     }
@@ -1267,7 +1328,8 @@ int sbc() {
 // SEC TESTS 45
 
 int sec() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1275,8 +1337,8 @@ int sec() {
         SEC
     */
     uint8_t code [] = "38";
-    load_code(ram, cpustate, code, sizeof code);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nes_clock(&cpustate, &bus);
     if (check_status(&cpustate, C)) {
         return 0;
     }
@@ -1286,7 +1348,8 @@ int sec() {
 // SED TESTS 46
 
 int sed() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1294,8 +1357,8 @@ int sed() {
         SEC
     */
     uint8_t code [] = "f8";
-    load_code(ram, cpustate, code, sizeof code);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nes_clock(&cpustate, &bus);
     if (!check_status(&cpustate, C)) {
         return 0;
     }
@@ -1305,7 +1368,8 @@ int sed() {
 // SEI TESTS 47
 
 int sei() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1313,8 +1377,8 @@ int sei() {
         SEI
     */
     uint8_t code [] = "78";
-    load_code(ram, cpustate, code, sizeof code);
-    clock(&cpustate, ram);
+    load_code(&bus, cpustate, code, sizeof code);
+    nes_clock(&cpustate, &bus);
     if (check_status(&cpustate, I)) {
         return 0;
     }
@@ -1324,7 +1388,8 @@ int sei() {
 // STA TESTS 48
 
 int sta_zp0() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1332,10 +1397,10 @@ int sta_zp0() {
         STA $20
     */
     uint8_t code [] = "85 20";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0x15;
-    clock(&cpustate, ram);
-    if (nesbus_read(ram, 0x0020) == 0x15) {
+    nes_clock(&cpustate, &bus);
+    if (nesbus_read(&bus, 0x0020) == 0x15) {
         return 0;
     }
     return 1;
@@ -1344,7 +1409,8 @@ int sta_zp0() {
 // STX TESTS 49
 
 int stx_zp0() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1352,10 +1418,10 @@ int stx_zp0() {
         STX $20
     */
     uint8_t code [] = "86 20";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.x = 0x3d;
-    clock(&cpustate, ram);
-    if (nesbus_read(ram, 0x0020) == 0x3d) {
+    nes_clock(&cpustate, &bus);
+    if (nesbus_read(&bus, 0x0020) == 0x3d) {
         return 0;
     }
     return 1;
@@ -1364,7 +1430,8 @@ int stx_zp0() {
 // STY TESTS 50
 
 int sty_zp0() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1372,10 +1439,10 @@ int sty_zp0() {
         STY $20
     */
     uint8_t code [] = "84 20";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.y = 0x3d;
-    clock(&cpustate, ram);
-    if (nesbus_read(ram, 0x0020) == 0x3d) {
+    nes_clock(&cpustate, &bus);
+    if (nesbus_read(&bus, 0x0020) == 0x3d) {
         return 0;
     }
     return 1;
@@ -1384,7 +1451,8 @@ int sty_zp0() {
 // TAX TESTS 51
 
 int tax() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1392,9 +1460,9 @@ int tax() {
         TAX
     */
     uint8_t code [] = "aa";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0x3d;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.x == 0x3d) {
         return 0;
     }
@@ -1404,7 +1472,8 @@ int tax() {
 // TAY TESTS 52
 
 int tay() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1412,9 +1481,9 @@ int tay() {
         TAY
     */
     uint8_t code [] = "a8";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.a = 0x3d;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.y == 0x3d) {
         return 0;
     }
@@ -1424,7 +1493,8 @@ int tay() {
 // TSX TESTS 53
 
 int tsx() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1432,9 +1502,9 @@ int tsx() {
         TSX
     */
     uint8_t code [] = "ba";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.sp = 0x3d;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.x == 0x3d) {
         return 0;
     }
@@ -1444,7 +1514,8 @@ int tsx() {
 // TXA TESTS 54
 
 int txa() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1452,9 +1523,9 @@ int txa() {
         TXA
     */
     uint8_t code [] = "8a";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.x = 0x3d;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x3d) {
         return 0;
     }
@@ -1464,7 +1535,8 @@ int txa() {
 // TXS TESTS 55
 
 int txs() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1472,9 +1544,9 @@ int txs() {
         TXS
     */
     uint8_t code [] = "9a";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.x = 0x3d;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.sp == 0x3d) {
         return 0;
     }
@@ -1484,7 +1556,8 @@ int txs() {
 // TYA TESTS 56
 
 int tya() {
-    uint8_t * ram = calloc(64 * 1024, sizeof(uint8_t));
+    Bus bus;
+    bus.ram = calloc(64 * 1024, sizeof(uint8_t));
     cpu6502 cpustate;
     cpustate.pc = 0x8000;
     cpustate.sp = 0xff;
@@ -1492,9 +1565,9 @@ int tya() {
         TYA
     */
     uint8_t code [] = "98";
-    load_code(ram, cpustate, code, sizeof code);
+    load_code(&bus, cpustate, code, sizeof code);
     cpustate.y = 0x3d;
-    clock(&cpustate, ram);
+    nes_clock(&cpustate, &bus);
     if (cpustate.a == 0x3d) {
         return 0;
     }

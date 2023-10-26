@@ -59,10 +59,26 @@ Mapper* load_rom(const char* filename, size_t* length) {
         default:
             break;
     }
-    for(size_t i = 0; i < mapper->chr_len; i++) {
-        printf("%u ", mapper->chr[i]);
-    }
+    // for(size_t i = 0; i < mapper->chr_len; i++) {
+    //     printf("%u ", mapper->chr[i]);
+    // }
 
-    printf("\n");
+    // printf("\n");
     return mapper;
 }
+
+// void write_prg(Mapper *mapper, uint16_t address, uint8_t data) {
+// }
+
+uint8_t read_prg(Mapper *mapper, uint16_t address) {
+    if (address >= 0x6000 && 0xFFFF >= address)
+        return * (mapper->prg + (address - 0x6000));
+    return 0x00;
+}
+
+void free_rom(Mapper *mapper) {
+    free(mapper->prg);
+    free(mapper->chr);
+    free(mapper);
+}
+
